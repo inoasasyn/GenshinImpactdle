@@ -4,7 +4,6 @@ import random
 
 
 def game():
-    print("haha")
     characters = setup.scrap_all_characters()
     while True:
         guess_counter = 0

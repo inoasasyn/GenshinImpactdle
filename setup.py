@@ -22,20 +22,20 @@ def scrap_all_characters():
     characters = create_character_objects(open_character_file())
 
     #mock
-    character_urls = character_urls[0:6]
+    character_urls = character_urls
 
     if len(character_urls) != len(characters):
-        icon_urls = re.findall(r'data-image-name=".*?Icon.png".*?src=".*?"', str(indiatable[0]))
-        weapon_urls = re.findall(r'<img alt="Weapon-class-.*?-icon".*?src=".*?"', str(indiatable[0]))
-        element_urls = re.findall(r'<img alt="Element.*?src=".*?"', str(indiatable[0]))
-        region_urls = re.findall(r'<img alt="Emblem.*?src=".*?"', str(indiatable[0]))
+        i = 0
+        all_chars = re.findall(r'<tr>.*?</tr>', str(indiatable[0]), flags=re.DOTALL)
+        for j in range(1, len(all_chars)):
+            all_chars[j] = re.findall(r'<td>.*?</td>', all_chars[j], flags=re.DOTALL)
         for url in character_urls:
             name = re.search('/wiki/', url)
             name = url[name.end():]
             name = re.sub('_', " ", name)
             is_character_in = find_by_name(characters, name)
             if not is_character_in:
-                icon_url = icon_urls[character_urls.index(url)]
+                icon_url = re.findall(r'src=".*?"', all_chars[i+1][0], flags=re.DOTALL)[0]
                 icon_url = get_url(icon_url)
                 get_img(icon_url, name)
 
@@ -49,7 +49,7 @@ def scrap_all_characters():
                 weapon = weapon[weapon_end_index.end():-1]
                 is_weapon_in = find_by_weapon_type(characters, weapon)
                 if not is_weapon_in:
-                    weapon_url = weapon_urls[character_urls.index(url)]
+                    weapon_url = re.findall(r'src=".*?"', all_chars[i + 1][4], flags=re.DOTALL)[0]
                     weapon_url = get_url(weapon_url)
                     get_img(weapon_url, weapon)
 
@@ -60,15 +60,15 @@ def scrap_all_characters():
                     element = element[element_end_index.end():-1]
                     is_element_in = find_by_element(characters, element)
                     if not is_element_in:
-                        element_url = element_urls[character_urls.index(url)]
+                        element_url = re.findall(r'src=".*?"', all_chars[i + 1][3], flags=re.DOTALL)[0]
                         element_url = get_url(element_url)
                         get_img(element_url, element)
                 else:
                     element = "None"
 
-                model_type = re.findall(r'<td class="pi-horizontal-group-item pi-data-value pi-font pi-border-color pi-item-spacing"><a href=".*?title="Category:.*?C', str(soup))[-1]
-                model_type_end_index = re.search('title="Category:', model_type)
-                model_type = model_type[model_type_end_index.end():-2]
+                model_type = re.findall(r'title=".*?>.*?</a>', all_chars[i + 1][6], flags=re.DOTALL)[0][:-4]
+                model_type_start_index = re.search(r'Characters">', model_type)
+                model_type = model_type[model_type_start_index.end():]
 
                 region = re.findall(r'Region.*?\n.*?title=".*?"', str(soup))
                 if len(region) > 0:
@@ -77,7 +77,7 @@ def scrap_all_characters():
                     region = region[region_end_index.end():-1]
                     is_region_in = find_by_region(characters, region)
                     if not is_region_in:
-                        region_url = region_urls[character_urls.index(url)]
+                        region_url = re.findall(r'src=".*?"', all_chars[i + 1][5], flags=re.DOTALL)[0]
                         region_url = get_url(region_url)
                         get_img(region_url, region)
                 else:
@@ -127,7 +127,7 @@ def scrap_all_characters():
                                  version]
                 add_character(new_character)
                 characters.append(create_character_objects([new_character])[0])
-
+            i += 1
     return characters
 
 
