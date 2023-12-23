@@ -12,5 +12,5 @@ class Character:
         self.ascension_local_speciality = ascension_local_speciality
         self.ascension_boss_drop = ascension_boss_drop
         self.ascension_mob_drop = ascension_mob_drop
-        self.release_date = release_date
         self.version = version
+        self.release_date = release_date
