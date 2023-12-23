@@ -3,8 +3,7 @@ import finder
 import random
 from datetime import datetime
 import pygame
-import time
-import math
+import os
 
 MAP_WIDTH = 1500
 MAP_HEIGHT = 800
@@ -14,16 +13,17 @@ WHITE = (255, 255, 255)
 RED = (212, 17, 17)
 GREEN = (17, 120, 20)
 
+max_guesses = 50
+number_of_additional_properties = 3
+
 
 class Application:
 
-    def game(self):
+    def game_in_console(self):
         while True:
             guessed_characters = []
             print("Guess character!")
             guess_counter = 0
-            max_guesses = 5
-            number_of_additional_properties = 3
             random_number = random.randint(0, len(characters)-1)
             character_to_guess = characters[random_number]
             properties = list(vars(character_to_guess).keys())
@@ -62,20 +62,85 @@ class Application:
 
     def loop(self):
         running = True
-        color = "red"
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    screen.fill(color)
-                    # Update our window
-                    pygame.display.flip()
-                    if (color == "red"):
-                        color = "green"
+        state = "home_screen"
+        color = WHITE
 
-                    else:
-                        color = "red"
+        while running:
+
+            if state == "home_screen":
+                font = pygame.font.Font('freesansbold.ttf', 32)
+                text = font.render('PRESS KEY TO START', True, WHITE)
+                textRect = text.get_rect()
+                textRect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2)
+                screen.blit(text, textRect)
+                pygame.display.update()
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    elif event.type == pygame.KEYDOWN:
+                        character_to_guess = characters[random.randint(0, len(characters) - 1)]
+                        print(character_to_guess.name)
+                        guessed_characters = []
+                        available_characters = characters
+                        guess_counter = 0
+                        current_character = available_characters[0]
+                        properties = list(vars(character_to_guess).keys())
+                        displayed_properties = properties[0:3]
+                        while len(displayed_properties) < 3 + number_of_additional_properties:
+                            add_properties = random.choices(properties[3:-1], k=number_of_additional_properties)
+                            if (properties[-1] or properties[-2] not in add_properties) and len(
+                                    set(add_properties)) == number_of_additional_properties:
+                                displayed_properties += add_properties
+                        state = "game"
+            elif state == "win" or state == "lose":
+                if state == "lose":
+                    screen.fill(RED)
+                else:
+                    screen.fill(GREEN)
+                color = WHITE
+                pygame.display.flip()
+                character_to_guess = characters[random.randint(0, len(characters) - 1)]
+                print(character_to_guess.name)
+                guessed_characters = []
+                available_characters = characters
+                guess_counter = 0
+                current_character = available_characters[0]
+                state = "game"
+            elif state == "game":
+                screen.fill(BLACK)
+                font = pygame.font.Font('freesansbold.ttf', 30)
+                text = font.render('Choose character to guess', True, color)
+                textRect = text.get_rect()
+                textRect.topleft = (10, 10)
+                screen.blit(text, textRect)
+                path = os.getcwd() + "\\Icons\\" + str(current_character.name).replace(" ", "_") + "_Icon.png"
+                img = pygame.image.load(path).convert()
+                screen.blit(img, (textRect.right + 10, 10))
+                pygame.display.flip()
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    elif event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_RIGHT:
+                            c = available_characters.index(current_character)
+                            current_character = available_characters[(c+1) % len(available_characters)]
+                        elif event.key == pygame.K_LEFT:
+                            c = available_characters.index(current_character)
+                            current_character = available_characters[(c + len(available_characters) - 1) % len(available_characters)]
+                        elif event.key == pygame.K_RETURN:
+                            guess_counter += 1
+                            guessed_characters.append(current_character)
+                            if current_character == character_to_guess:
+                                color = GREEN
+                                state = "win"
+                            else:
+                                color = RED
+                                available_characters.remove(current_character)
+                                current_character = available_characters[0]
+                                if guess_counter == max_guesses:
+                                    state = "lose"
+                            screen.fill(color)
+                            pygame.display.flip()
 
 
 pygame.init()
