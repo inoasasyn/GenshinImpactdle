@@ -13,7 +13,7 @@ WHITE = (255, 255, 255)
 RED = (212, 17, 17)
 GREEN = (17, 120, 20)
 
-max_guesses = 50
+max_guesses = 5
 number_of_additional_properties = 3
 
 
@@ -95,17 +95,31 @@ class Application:
             elif state == "win" or state == "lose":
                 if state == "lose":
                     screen.fill(RED)
+                    font = pygame.font.Font('freesansbold.ttf', 36)
+                    text = font.render('YOU LOSE', True, WHITE)
+                    textRect = text.get_rect()
+                    textRect.center = (MAP_WIDTH // 2, MAP_HEIGHT // 2 - 50)
+                    screen.blit(text, textRect)
+                    path = os.getcwd() + "\\Icons\\" + str(character_to_guess.name).replace(" ", "_") + "_Icon.png"
+                    img = pygame.image.load(path)
+                    img = pygame.transform.scale(img, (200, 200))
+                    screen.blit(img, (650, 400))
+                    pygame.display.flip()
                 else:
                     screen.fill(GREEN)
-                color = WHITE
-                pygame.display.flip()
-                character_to_guess = characters[random.randint(0, len(characters) - 1)]
-                print(character_to_guess.name)
-                guessed_characters = []
-                available_characters = characters
-                guess_counter = 0
-                current_character = available_characters[0]
-                state = "game"
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    elif event.type == pygame.KEYDOWN:
+                        color = WHITE
+                        pygame.display.flip()
+                        character_to_guess = characters[random.randint(0, len(characters) - 1)]
+                        print(character_to_guess.name)
+                        guessed_characters = []
+                        available_characters = characters
+                        guess_counter = 0
+                        current_character = available_characters[0]
+                        state = "game"
             elif state == "game":
                 screen.fill(BLACK)
                 font = pygame.font.Font('freesansbold.ttf', 30)
@@ -114,7 +128,8 @@ class Application:
                 textRect.topleft = (10, 10)
                 screen.blit(text, textRect)
                 path = os.getcwd() + "\\Icons\\" + str(current_character.name).replace(" ", "_") + "_Icon.png"
-                img = pygame.image.load(path).convert()
+                img = pygame.image.load(path)
+                img = pygame.transform.scale(img, (100, 100))
                 screen.blit(img, (textRect.right + 10, 10))
                 pygame.display.flip()
                 for event in pygame.event.get():
