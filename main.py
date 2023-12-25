@@ -165,7 +165,7 @@ class Application:
                         character_to_guess = characters[random.randint(0, len(characters) - 1)]
                         print(character_to_guess.name)
                         guessed_characters = []
-                        available_characters = characters
+                        available_characters = characters.copy()
                         guess_counter = 0
                         current_character = available_characters[0]
                         properties = list(vars(character_to_guess).keys())
@@ -200,25 +200,79 @@ class Application:
                         character_to_guess = characters[random.randint(0, len(characters) - 1)]
                         print(character_to_guess.name)
                         guessed_characters = []
-                        available_characters = characters
+                        available_characters = characters.copy()
                         guess_counter = 0
                         current_character = available_characters[0]
                         state = "game"
             elif state == "game":
                 screen.fill(BLACK)
                 font = pygame.font.Font('freesansbold.ttf', 30)
-                text = font.render('Choose character to guess', True, color)
+                text = font.render('Choose character to guess', True, WHITE)
                 textRect = text.get_rect()
                 textRect.topleft = (10, 10)
                 screen.blit(text, textRect)
                 path = os.getcwd() + "\\Icons\\" + str(current_character.name).replace(" ", "_") + "_Icon.png"
                 img = pygame.image.load(path)
-                img = pygame.transform.scale(img, (120, 120))
+                img = pygame.transform.scale(img, (150, 150))
                 screen.blit(img, (textRect.right + 10, 10))
 
                 #DRAW TABLE HERE
+                table = [displayed_properties] + guessed_characters
+                thickness = 2
+                top_left_corner = (30, img.get_rect().bottom + 50)
+                size = (
+                    (number_of_additional_properties + 3) * 220 + 100 + (
+                                thickness * (number_of_additional_properties + 5)),
+                    (len(table) - 1) * 100 + 50 + (thickness * (len(table) + 1)))
+                pygame.draw.rect(screen, WHITE,
+                                 pygame.Rect((top_left_corner[0] - thickness, top_left_corner[1] - thickness), size))
+                for i in range(len(table)):
+                    if i == 0:
+                        t_length = 50
+                        color = BLUE
+                    else:
+                        t_length = 100
+                        color = BLACK
+                    for j in range(0, number_of_additional_properties + 4):
+                        if i == 0 and j == 0:
+                            t_width = 100
+                            text = "Icon"
+                        elif j == 0:
+                            t_width = 100
+                            text = table[i].__getattribute__("name")
+                        elif j in [2, 3]:
+                            t_width = 100
+                            if i == 0:
+                                text = table[i][j - 1]
+                            else:
+                                text = table[i].__getattribute__(displayed_properties[j - 1])
+                        elif i == 0:
+                            t_width = 280
+                            text = table[i][j - 1]
+                        else:
+                            t_width = 280
+                            text = table[i].__getattribute__(displayed_properties[j - 1])
+                        rect = pygame.Rect(top_left_corner, (t_width, t_length))
+                        pygame.draw.rect(screen, color, rect)
+                        if j == 0 and i != 0:
+                            path = os.getcwd() + "\\Icons\\" + str(text).replace(" ", "_") + "_Icon.png"
+                            t_img = pygame.image.load(path)
+                            t_img = pygame.transform.scale(t_img, (t_width, t_width))
+                            t_imgRect = t_img.get_rect()
+                            t_imgRect.center = rect.center
+                            screen.blit(t_img, t_imgRect)
+                        else:
+                            font = pygame.font.Font('freesansbold.ttf', 20)
+                            text = text.replace("_", " ")
+                            text = font.render(text.capitalize(), True, WHITE)
+                            textRect = text.get_rect()
+                            textRect.center = rect.center
+                            screen.blit(text, textRect)
+                        top_left_corner = (top_left_corner[0] + t_width + thickness, top_left_corner[1])
+                    top_left_corner = (30, top_left_corner[1] + t_length + thickness)
 
                 pygame.display.flip()
+
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
@@ -241,7 +295,6 @@ class Application:
                                 current_character = available_characters[0]
                                 if guess_counter == max_guesses:
                                     state = "lose"
-                            screen.fill(color)
                             pygame.display.flip()
 
 
@@ -250,5 +303,5 @@ screen = pygame.display.set_mode([MAP_WIDTH, MAP_HEIGHT])
 pygame.display.set_caption("GENSHINDLE")
 characters = setup.scrap_all_characters()
 app = Application()
-#app.loop()
-app.draw_table()
+app.loop()
+#app.draw_table()
