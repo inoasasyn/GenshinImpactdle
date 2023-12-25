@@ -190,7 +190,87 @@ class Application:
                     screen.blit(img, (650, 400))
                     pygame.display.flip()
                 else:
-                    screen.fill(GREEN)
+                    screen.fill(BLACK)
+                    font = pygame.font.Font('freesansbold.ttf', 36)
+                    text = font.render('YOU WON', True, WHITE)
+                    textRect = text.get_rect()
+                    textRect.center = (MAP_WIDTH // 2 - 80, 100)
+                    screen.blit(text, textRect)
+                    path = os.getcwd() + "\\Icons\\" + str(current_character.name).replace(" ", "_") + "_Icon.png"
+                    img = pygame.image.load(path)
+                    img = pygame.transform.scale(img, (150, 150))
+                    screen.blit(img, (textRect.right + 10, 10))
+
+                    # DRAW TABLE HERE
+                    table = [displayed_properties] + guessed_characters
+                    thickness = 2
+                    top_left_corner = (30, img.get_rect().bottom + 50)
+                    size = (
+                        (number_of_additional_properties + 3) * 220 + 100 + (
+                                thickness * (number_of_additional_properties + 5)),
+                        (len(table) - 1) * 100 + 50 + (thickness * (len(table) + 1)))
+                    pygame.draw.rect(screen, WHITE,
+                                     pygame.Rect((top_left_corner[0] - thickness, top_left_corner[1] - thickness),
+                                                 size))
+                    for i in range(len(table)):
+                        if i == 0:
+                            t_length = 50
+                            color = BLUE
+                        else:
+                            t_length = 100
+                            color = BLACK
+                        for j in range(0, number_of_additional_properties + 4):
+                            if i == 0 and j == 0:
+                                t_width = 100
+                                text = "Icon"
+                            elif j == 0:
+                                t_width = 100
+                                text = table[i].__getattribute__("name")
+                                if table[i] == character_to_guess:
+                                    color = GREEN
+                                else:
+                                    color = RED
+                            elif j in [2, 3]:
+                                t_width = 100
+                                if i == 0:
+                                    text = table[i][j - 1]
+                                else:
+                                    text = table[i].__getattribute__(displayed_properties[j - 1])
+                                    if text == character_to_guess.__getattribute__(displayed_properties[j - 1]):
+                                        color = GREEN
+                                    else:
+                                        color = RED
+                            elif i == 0:
+                                t_width = 280
+                                text = table[i][j - 1]
+                            else:
+                                t_width = 280
+                                text = table[i].__getattribute__(displayed_properties[j - 1])
+                                if text == character_to_guess.__getattribute__(displayed_properties[j - 1]):
+                                    color = GREEN
+                                else:
+                                    color = RED
+                            rect = pygame.Rect(top_left_corner, (t_width, t_length))
+                            pygame.draw.rect(screen, color, rect)
+                            if j == 0 and i != 0:
+                                path = os.getcwd() + "\\Icons\\" + str(text).replace(" ", "_") + "_Icon.png"
+                                t_img = pygame.image.load(path)
+                                t_img = pygame.transform.scale(t_img, (t_width, t_width))
+                                t_imgRect = t_img.get_rect()
+                                t_imgRect.center = rect.center
+                                screen.blit(t_img, t_imgRect)
+                            else:
+                                font = pygame.font.Font('freesansbold.ttf', 20)
+                                text = text.replace("_", " ")
+                                text = font.render(text.capitalize(), True, WHITE)
+                                textRect = text.get_rect()
+                                textRect.center = rect.center
+                                screen.blit(text, textRect)
+                            top_left_corner = (top_left_corner[0] + t_width + thickness, top_left_corner[1])
+                        top_left_corner = (30, top_left_corner[1] + t_length + thickness)
+
+                    pygame.display.flip()
+
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
@@ -240,18 +320,30 @@ class Application:
                         elif j == 0:
                             t_width = 100
                             text = table[i].__getattribute__("name")
+                            if table[i] == character_to_guess:
+                                color = GREEN
+                            else:
+                                color = RED
                         elif j in [2, 3]:
                             t_width = 100
                             if i == 0:
                                 text = table[i][j - 1]
                             else:
                                 text = table[i].__getattribute__(displayed_properties[j - 1])
+                                if text == character_to_guess.__getattribute__(displayed_properties[j - 1]):
+                                    color = GREEN
+                                else:
+                                    color = RED
                         elif i == 0:
                             t_width = 280
                             text = table[i][j - 1]
                         else:
                             t_width = 280
                             text = table[i].__getattribute__(displayed_properties[j - 1])
+                            if text == character_to_guess.__getattribute__(displayed_properties[j - 1]):
+                                color = GREEN
+                            else:
+                                color = RED
                         rect = pygame.Rect(top_left_corner, (t_width, t_length))
                         pygame.draw.rect(screen, color, rect)
                         if j == 0 and i != 0:
