@@ -87,32 +87,28 @@ class Application:
                     screen.blit(text, textRect)
                     path = os.getcwd() + "\\Icons\\" + str(characters[0].name).replace(" ", "_") + "_Icon.png"
                     img = pygame.image.load(path)
-                    img = pygame.transform.scale(img, (100, 100))
+                    img = pygame.transform.scale(img, (120, 120))
                     screen.blit(img, (textRect.right + 10, 10))
 
                     thickness = 2
-                    t_length = 100
-                    t_width = 180
-                    for i in range(len(table)+1):
-                        start_pos = (10, img.get_rect().bottom + 50 + (i*(t_length+thickness)))
-                        end_pos = (MAP_WIDTH - 10, img.get_rect().bottom + 50 + (i*(t_length+thickness)))
-                        pygame.draw.line(screen, WHITE, start_pos, end_pos, thickness)
-
-                        for j in range(0, number_of_additional_properties + 5):
-                            start_pos = (10 + (j*(t_width+thickness)), img.get_rect().bottom + 50)
-                            end_pos = (10 + (j*(t_width+thickness)), img.get_rect().bottom + 50 + (t_length*(len(table))) + (thickness*(len(table)+1)))
-                            pygame.draw.line(screen, WHITE, start_pos, end_pos, thickness)
-
-                            if i == 0 and j > 0:
-                                if j == 1:
-                                    to_display = "Icon"
-                                elif j > 1:
-                                    to_display = table[i][j-2]
-                                font = pygame.font.Font('freesansbold.ttf', 15)
-                                text = font.render(to_display, True, WHITE)
-                                textRect = text.get_rect()
-                                textRect.topright = (10 + (j*(t_width+thickness)), img.get_rect().bottom + 50 + (i*(t_length+thickness)))
-                                screen.blit(text, textRect)
+                    top_left_corner = (30, img.get_rect().bottom + 50)
+                    size = (
+                        (number_of_additional_properties + 3)*220+100+(thickness*(number_of_additional_properties + 5)),
+                        (len(table) - 1)*100+50+(thickness*(len(table)+1)))
+                    pygame.draw.rect(screen, WHITE, pygame.Rect((top_left_corner[0]-thickness, top_left_corner[1] -thickness), size))
+                    for i in range(len(table)):
+                        if i == 0:
+                            t_length = 50
+                        else:
+                            t_length = 100
+                        for j in range(0, number_of_additional_properties + 4):
+                            if j == 0:
+                                t_width = 100
+                            else:
+                                t_width = 220
+                            pygame.draw.rect(screen, BLACK, pygame.Rect(top_left_corner, (t_width, t_length)))
+                            top_left_corner = (top_left_corner[0] + t_width + thickness, top_left_corner[1])
+                        top_left_corner = (30, top_left_corner[1] + t_length + thickness)
 
                     pygame.display.flip()
 
