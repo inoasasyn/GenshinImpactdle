@@ -21,9 +21,6 @@ def scrap_all_characters():
 
     characters = create_character_objects(open_character_file())
 
-    #mock
-    character_urls = character_urls
-
     if len(character_urls) != len(characters):
         i = 0
         all_chars = re.findall(r'<tr>.*?</tr>', str(indiatable[0]), flags=re.DOTALL)
@@ -114,11 +111,9 @@ def scrap_all_characters():
                 release_date_end_index = re.search('font">', release_date)
                 release_date = release_date[release_date_end_index.end():-1]
 
-                help_version = re.findall(r'<td><a href="/wiki/.*?" title=".*?">.*?</a>', str(indiatable[0]))
-                indices = [i for i, s in enumerate(help_version) if name in s][0]
-                version = re.findall(r'<td><a href="/wiki/Version/.*?</a>', str(indiatable[0]))[int(indices/4)]
-                version_end_index = re.search('">', version)
-                version = version[version_end_index.end():-4]
+                version = re.findall(r'href="/wiki/Category:Released_in_Version_.*?"', str(soup))[-1]
+                version_end_index = re.search('Version_', version)
+                version = version[version_end_index.end():-1]
 
                 #print(name, rarity, element, model_type, region, special_stat, ascension_local_speciality,
                 #      ascension_boss_drop, ascension_mob_drop, release_date, version)
