@@ -60,6 +60,62 @@ class Application:
                     print("You WIN!!!")
                     guess_counter = max_guesses + 1
 
+    def draw_table(self):
+        running = True
+        character_to_guess = characters[random.randint(0, len(characters) - 1)]
+        properties = list(vars(character_to_guess).keys())
+        displayed_properties = properties[0:3]
+        while len(displayed_properties) < 3 + number_of_additional_properties:
+            add_properties = random.choices(properties[3:-1], k=number_of_additional_properties)
+            if (properties[-1] or properties[-2] not in add_properties) and len(
+                    set(add_properties)) == number_of_additional_properties:
+                displayed_properties += add_properties
+
+        ###################################33
+        table = [displayed_properties] + characters[:5]
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                else:
+                    screen.fill(BLACK)
+                    font = pygame.font.Font('freesansbold.ttf', 30)
+                    text = font.render('Choose character to guess', True, WHITE)
+                    textRect = text.get_rect()
+                    textRect.topleft = (10, 10)
+                    screen.blit(text, textRect)
+                    path = os.getcwd() + "\\Icons\\" + str(characters[0].name).replace(" ", "_") + "_Icon.png"
+                    img = pygame.image.load(path)
+                    img = pygame.transform.scale(img, (100, 100))
+                    screen.blit(img, (textRect.right + 10, 10))
+
+                    thickness = 2
+                    t_length = 100
+                    t_width = 180
+                    for i in range(len(table)+1):
+                        start_pos = (10, img.get_rect().bottom + 50 + (i*(t_length+thickness)))
+                        end_pos = (MAP_WIDTH - 10, img.get_rect().bottom + 50 + (i*(t_length+thickness)))
+                        pygame.draw.line(screen, WHITE, start_pos, end_pos, thickness)
+
+                        for j in range(0, number_of_additional_properties + 5):
+                            start_pos = (10 + (j*(t_width+thickness)), img.get_rect().bottom + 50)
+                            end_pos = (10 + (j*(t_width+thickness)), img.get_rect().bottom + 50 + (t_length*(len(table))) + (thickness*(len(table)+1)))
+                            pygame.draw.line(screen, WHITE, start_pos, end_pos, thickness)
+
+                            if i == 0 and j > 0:
+                                if j == 1:
+                                    to_display = "Icon"
+                                elif j > 1:
+                                    to_display = table[i][j-2]
+                                font = pygame.font.Font('freesansbold.ttf', 15)
+                                text = font.render(to_display, True, WHITE)
+                                textRect = text.get_rect()
+                                textRect.topright = (10 + (j*(t_width+thickness)), img.get_rect().bottom + 50 + (i*(t_length+thickness)))
+                                screen.blit(text, textRect)
+
+                    pygame.display.flip()
+
     def loop(self):
         running = True
         state = "home_screen"
@@ -131,6 +187,9 @@ class Application:
                 img = pygame.image.load(path)
                 img = pygame.transform.scale(img, (100, 100))
                 screen.blit(img, (textRect.right + 10, 10))
+
+                #DRAW TABLE HERE
+
                 pygame.display.flip()
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -163,4 +222,5 @@ screen = pygame.display.set_mode([MAP_WIDTH, MAP_HEIGHT])
 pygame.display.set_caption("GENSHINDLE")
 characters = setup.scrap_all_characters()
 app = Application()
-app.loop()
+#app.loop()
+app.draw_table()
