@@ -12,6 +12,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (212, 17, 17)
 GREEN = (17, 120, 20)
+BLUE = (9, 72, 173)
 
 max_guesses = 5
 number_of_additional_properties = 3
@@ -71,7 +72,7 @@ class Application:
                     set(add_properties)) == number_of_additional_properties:
                 displayed_properties += add_properties
 
-        ###################################33
+        #####################################
         table = [displayed_properties] + characters[:5]
 
         while running:
@@ -87,7 +88,7 @@ class Application:
                     screen.blit(text, textRect)
                     path = os.getcwd() + "\\Icons\\" + str(characters[0].name).replace(" ", "_") + "_Icon.png"
                     img = pygame.image.load(path)
-                    img = pygame.transform.scale(img, (120, 120))
+                    img = pygame.transform.scale(img, (150, 150))
                     screen.blit(img, (textRect.right + 10, 10))
 
                     thickness = 2
@@ -99,14 +100,45 @@ class Application:
                     for i in range(len(table)):
                         if i == 0:
                             t_length = 50
+                            color = BLUE
                         else:
                             t_length = 100
+                            color = BLACK
                         for j in range(0, number_of_additional_properties + 4):
-                            if j == 0:
+                            if i == 0 and j == 0:
                                 t_width = 100
+                                text = "Icon"
+                            elif j == 0:
+                                t_width = 100
+                                text = table[i].__getattribute__("name")
+                            elif j in [2, 3]:
+                                t_width = 100
+                                if i == 0:
+                                    text = table[i][j - 1]
+                                else:
+                                    text = table[i].__getattribute__(displayed_properties[j-1])
+                            elif i == 0:
+                                t_width = 280
+                                text = table[i][j-1]
                             else:
-                                t_width = 220
-                            pygame.draw.rect(screen, BLACK, pygame.Rect(top_left_corner, (t_width, t_length)))
+                                t_width = 280
+                                text = table[i].__getattribute__(displayed_properties[j-1])
+                            rect = pygame.Rect(top_left_corner, (t_width, t_length))
+                            pygame.draw.rect(screen, color, rect)
+                            if j == 0 and i != 0:
+                                path = os.getcwd() + "\\Icons\\" + str(text).replace(" ", "_") + "_Icon.png"
+                                t_img = pygame.image.load(path)
+                                t_img = pygame.transform.scale(t_img, (t_width, t_width))
+                                t_imgRect = t_img.get_rect()
+                                t_imgRect.center = rect.center
+                                screen.blit(t_img, t_imgRect)
+                            else:
+                                font = pygame.font.Font('freesansbold.ttf', 20)
+                                text = text.replace("_", " ")
+                                text = font.render(text.capitalize(), True, WHITE)
+                                textRect = text.get_rect()
+                                textRect.center = rect.center
+                                screen.blit(text, textRect)
                             top_left_corner = (top_left_corner[0] + t_width + thickness, top_left_corner[1])
                         top_left_corner = (30, top_left_corner[1] + t_length + thickness)
 
@@ -181,7 +213,7 @@ class Application:
                 screen.blit(text, textRect)
                 path = os.getcwd() + "\\Icons\\" + str(current_character.name).replace(" ", "_") + "_Icon.png"
                 img = pygame.image.load(path)
-                img = pygame.transform.scale(img, (100, 100))
+                img = pygame.transform.scale(img, (120, 120))
                 screen.blit(img, (textRect.right + 10, 10))
 
                 #DRAW TABLE HERE
