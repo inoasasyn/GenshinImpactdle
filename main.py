@@ -7,6 +7,7 @@ import os
 
 MAP_WIDTH = 1500
 MAP_HEIGHT = 800
+STANDARD_IMG_SIZE = 150
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -103,7 +104,7 @@ class Application:
                     screen.blit(text, textRect)
                     path = os.getcwd() + "\\Icons\\" + str(character_to_guess.name).replace(" ", "_") + "_Icon.png"
                     img = pygame.image.load(path)
-                    img = pygame.transform.scale(img, (200, 200))
+                    img = pygame.transform.scale(img, (STANDARD_IMG_SIZE+50, STANDARD_IMG_SIZE+50))
                     screen.blit(img, (650, 400))
                     pygame.display.flip()
                 else:
@@ -115,7 +116,7 @@ class Application:
                     screen.blit(text, textRect)
                     path = os.getcwd() + "\\Icons\\" + str(current_character.name).replace(" ", "_") + "_Icon.png"
                     img = pygame.image.load(path)
-                    img = pygame.transform.scale(img, (150, 150))
+                    img = pygame.transform.scale(img, (STANDARD_IMG_SIZE, STANDARD_IMG_SIZE))
                     screen.blit(img, (textRect.right + 10, 10))
 
                     # DRAW TABLE HERE
@@ -214,7 +215,7 @@ class Application:
                 screen.blit(text, textRect)
                 path = os.getcwd() + "\\Icons\\" + str(current_character.name).replace(" ", "_") + "_Icon.png"
                 img = pygame.image.load(path)
-                img = pygame.transform.scale(img, (150, 150))
+                img = pygame.transform.scale(img, (STANDARD_IMG_SIZE, STANDARD_IMG_SIZE))
                 screen.blit(img, (textRect.right + 10, 10))
 
                 #DRAW TABLE HERE
@@ -222,8 +223,8 @@ class Application:
                 thickness = 2
                 top_left_corner = (30, img.get_rect().bottom + 50)
                 size = (
-                    (number_of_additional_properties + 3) * 220 + 100 + (
-                                thickness * (number_of_additional_properties + 5)),
+                    (number_of_additional_properties + 1) * 280 + 3 * 100 + (
+                            thickness * (number_of_additional_properties + 5)),
                     (len(table) - 1) * 100 + 50 + (thickness * (len(table) + 1)))
                 pygame.draw.rect(screen, WHITE,
                                  pygame.Rect((top_left_corner[0] - thickness, top_left_corner[1] - thickness), size))
