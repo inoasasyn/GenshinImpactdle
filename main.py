@@ -62,8 +62,7 @@ class Application:
                     print("You WIN!!!")
                     guess_counter = max_guesses + 1
 
-    def draw_table(self, table, displayed_properties, img, screen, character_to_guess, top_left_corner):
-        #top_left_corner = (30, img.get_rect().bottom + 50)
+    def draw_table(self, table, displayed_properties, screen, character_to_guess, top_left_corner):
         size = (
             (number_of_additional_properties + 3) * 220 + 100 + (
                     THICKNESS * (number_of_additional_properties + 5)),
@@ -116,10 +115,19 @@ class Application:
                                 text += "  ^"
                 rect = pygame.Rect(top_left_corner, (t_width, t_length))
                 pygame.draw.rect(screen, color, rect)
+                drawable_attributes = ["element", "weapon_type", "region", "ascension_local_speciality",
+                                       "ascension_boss_drop", "ascension_mob_drop"]
                 if j == 0 and i != 0:
                     path = os.getcwd() + "\\Icons\\" + str(text).replace(" ", "_") + "_Icon.png"
                     t_img = pygame.image.load(path)
                     t_img = pygame.transform.scale(t_img, (t_width, t_width))
+                    t_imgRect = t_img.get_rect()
+                    t_imgRect.center = rect.center
+                    screen.blit(t_img, t_imgRect)
+                elif displayed_properties[j - 1] in drawable_attributes and i != 0 and text != "None":
+                    path = os.getcwd() + "\\Icons\\" + str(text).replace(" ", "_") + "_Icon.png"
+                    t_img = pygame.image.load(path)
+                    t_img = pygame.transform.scale(t_img, (100, 100))
                     t_imgRect = t_img.get_rect()
                     t_imgRect.center = rect.center
                     screen.blit(t_img, t_imgRect)
@@ -192,7 +200,7 @@ class Application:
 
                     table = [displayed_properties] + [character_to_guess]
                     top_left_corner = (30, img.get_rect().bottom + 100)
-                    app.draw_table(table, displayed_properties, img, screen, character_to_guess, top_left_corner)
+                    app.draw_table(table, displayed_properties, screen, character_to_guess, top_left_corner)
 
                 else:
                     #screen.fill(BLACK)
@@ -208,7 +216,7 @@ class Application:
 
                     table = [displayed_properties] + guessed_characters
                     top_left_corner = (30, img.get_rect().bottom + 50)
-                    app.draw_table(table, displayed_properties, img, screen, character_to_guess, top_left_corner)
+                    app.draw_table(table, displayed_properties, screen, character_to_guess, top_left_corner)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -227,7 +235,7 @@ class Application:
                 font = pygame.font.Font('freesansbold.ttf', 30)
                 text = font.render('Choose character to guess', True, WHITE)
                 textRect = text.get_rect()
-                textRect.topleft = (10, 10)
+                textRect.topleft = (30, 65)
                 screen.blit(text, textRect)
                 path = os.getcwd() + "\\Icons\\" + str(current_character.name).replace(" ", "_") + "_Icon.png"
                 img = pygame.image.load(path)
@@ -236,7 +244,7 @@ class Application:
 
                 table = [displayed_properties] + guessed_characters
                 top_left_corner = (30, img.get_rect().bottom + 50)
-                app.draw_table(table, displayed_properties, img, screen, character_to_guess, top_left_corner)
+                app.draw_table(table, displayed_properties, screen, character_to_guess, top_left_corner)
 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
