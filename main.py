@@ -57,17 +57,25 @@ class Application:
                     else:
                         correct = getattr(character_to_guess, x) == getattr(guessed_character, x)
                         print(str(x) + ": " + str(getattr(guessed_character, x)) + " is ", str(correct))
-                        pygame.draw.rect(screen, GREEN, [0, 0, 10, 10], 1)
+                        #pygame.draw.rect(screen, GREEN, [0, 0, 10, 10], 1)
                 if guessed_character == character_to_guess:
                     print("You WIN!!!")
                     guess_counter = max_guesses + 1
 
     def loop(self):
+
+        pygame.init()
+        screen = pygame.display.set_mode([MAP_WIDTH, MAP_HEIGHT])
+        pygame.display.set_caption("GENSHINDLE")
+
         running = True
         state = "home_screen"
         color = WHITE
 
         while running:
+            bg = pygame.image.load("BG.png")
+            bg = pygame.transform.scale(bg, (MAP_WIDTH, MAP_HEIGHT))
+            screen.blit(bg, (0, 0))
 
             if state == "home_screen":
                 font = pygame.font.Font('freesansbold.ttf', 32)
@@ -108,7 +116,7 @@ class Application:
                     screen.blit(img, (650, 400))
                     pygame.display.flip()
                 else:
-                    screen.fill(BLACK)
+                    #screen.fill(BLACK)
                     font = pygame.font.Font('freesansbold.ttf', 36)
                     text = font.render('YOU WON', True, WHITE)
                     textRect = text.get_rect()
@@ -207,7 +215,7 @@ class Application:
                         current_character = available_characters[0]
                         state = "game"
             elif state == "game":
-                screen.fill(BLACK)
+                #screen.fill(BLACK)
                 font = pygame.font.Font('freesansbold.ttf', 30)
                 text = font.render('Choose character to guess', True, WHITE)
                 textRect = text.get_rect()
@@ -315,9 +323,6 @@ class Application:
                             pygame.display.flip()
 
 
-pygame.init()
-screen = pygame.display.set_mode([MAP_WIDTH, MAP_HEIGHT])
-pygame.display.set_caption("GENSHINDLE")
 characters = sorted(setup.scrap_all_characters(), key=lambda x: x.name)
 app = Application()
 app.loop()
